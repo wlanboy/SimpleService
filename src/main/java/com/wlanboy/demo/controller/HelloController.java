@@ -3,6 +3,7 @@ package com.wlanboy.demo.controller;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import org.joda.time.DateTime;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,11 @@ public class HelloController {
 
     static AtomicInteger counter = new AtomicInteger(0);
 
+    /**
+     * http://127.0.0.1:8001/hello
+     * @param name String
+     * @return String template
+     */
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public HttpEntity<HelloParameters> hello(
             @RequestParam(value = "name", defaultValue = "World") String name) {
@@ -33,5 +39,17 @@ public class HelloController {
         logger.info("HelloParameters created.");
         return new ResponseEntity<HelloParameters>(helloString, HttpStatus.OK);
     }
+    
+    /**
+     * http://127.0.0.1:8001/datetime
+     * @return String template
+     */
+    @RequestMapping(value = "/datetime", method = RequestMethod.GET)
+    public HttpEntity<String> datetime() {
+
+        logger.info("DateTime created.");
+        DateTime now = DateTime.now();
+        return new ResponseEntity<String>(now.toLocalDateTime().toString(), HttpStatus.OK);
+    }    
   
 }
