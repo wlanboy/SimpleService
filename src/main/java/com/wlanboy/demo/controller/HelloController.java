@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,9 +31,12 @@ public class HelloController {
      * @param name String
      * @return String template
      */
-    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
     public HttpEntity<HelloParameters> hello(
-            @RequestParam(value = "name", defaultValue = "World") String name) {
+            @PathVariable(value = "name", required = false) String name) {
+    			if (name == null) {
+    				name = "test";
+    			}
                 HelloParameters helloString = new HelloParameters(counter.incrementAndGet(),"Hello",name);
                 helloString.add(linkTo(methodOn(HelloController.class).hello(name)).withSelfRel());
 
