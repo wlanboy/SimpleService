@@ -3,7 +3,7 @@ package com.wlanboy.demo.model;
 import org.springframework.hateoas.ResourceSupport;
 
 public class HelloParameters extends ResourceSupport {
-	private Integer counter;
+	private Long identifier;
 	private String target;
 	private String status;
 	
@@ -11,17 +11,24 @@ public class HelloParameters extends ResourceSupport {
 		
 	}
 
-	public HelloParameters(Integer counter, String target, String status) {
-		this.counter = counter;
+	public HelloParameters(Long counter, String target, String status) {
+		this.identifier = counter;
 		this.target = target;
 		this.status = status;
 	}	
+	
+	public HelloParameters(Vorgang vorgang) {
+		this.identifier = vorgang.getId();
+		this.target = vorgang.getName();
+		this.status = vorgang.getStatus();
+		
+	}	
 
-	public Integer getCounter() {
-		return counter;
+	public Long getIdentifier() {
+		return identifier;
 	}
-	public void setCounter(Integer counter) {
-		this.counter = counter;
+	public void setIdentifier(Long identifier) {
+		this.identifier = identifier;
 	}
 
 	public String getTarget() {
@@ -41,7 +48,7 @@ public class HelloParameters extends ResourceSupport {
 
 	@Override
 	public String toString() {
-		return "HelloParameters [Counter=" + counter + ",target=" + target + ", status=" + status + "]";
+		return "HelloParameters [Identifier=" + identifier + ",target=" + target + ", status=" + status + "]";
 	}
 
 }
