@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wlanboy.demo.model.HelloParameters;
@@ -21,39 +20,40 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 public class HelloController {
 
-    private static final Logger logger = Logger
-            .getLogger(HelloController.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(HelloController.class.getCanonicalName());
 
-    static AtomicInteger counter = new AtomicInteger(0);
+	static AtomicInteger counter = new AtomicInteger(0);
 
-    /**
-     * http://127.0.0.1:8001/hello
-     * @param name String
-     * @return String template
-     */
-    @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
-    public HttpEntity<HelloParameters> hello(
-            @PathVariable(value = "name", required = false) String name) {
-    			if (name == null) {
-    				name = "test";
-    			}
-                HelloParameters helloString = new HelloParameters(counter.incrementAndGet(),"Hello",name);
-                helloString.add(linkTo(methodOn(HelloController.class).hello(name)).withSelfRel());
+	/**
+	 * http://127.0.0.1:8001/hello
+	 * 
+	 * @param name
+	 *            String
+	 * @return String template
+	 */
+	@RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
+	public HttpEntity<HelloParameters> hello(@PathVariable(value = "name", required = false) String name) {
+		if (name == null) {
+			name = "test";
+		}
+		HelloParameters helloString = new HelloParameters(new Long(counter.incrementAndGet()), "Hello", name);
+		helloString.add(linkTo(methodOn(HelloController.class).hello(name)).withSelfRel());
 
-        logger.info("HelloParameters created.");
-        return new ResponseEntity<HelloParameters>(helloString, HttpStatus.OK);
-    }
-    
-    /**
-     * http://127.0.0.1:8001/datetime
-     * @return String template
-     */
-    @RequestMapping(value = "/datetime", method = RequestMethod.GET)
-    public HttpEntity<String> datetime() {
+		logger.info("HelloParameters created.");
+		return new ResponseEntity<HelloParameters>(helloString, HttpStatus.OK);
+	}
 
-        logger.info("DateTime created.");
-        DateTime now = DateTime.now();
-        return new ResponseEntity<String>(now.toLocalDateTime().toString(), HttpStatus.OK);
-    }    
-  
+	/**
+	 * http://127.0.0.1:8001/datetime
+	 * 
+	 * @return String template
+	 */
+	@RequestMapping(value = "/datetime", method = RequestMethod.GET)
+	public HttpEntity<String> datetime() {
+
+		logger.info("DateTime created.");
+		DateTime now = DateTime.now();
+		return new ResponseEntity<String>(now.toLocalDateTime().toString(), HttpStatus.OK);
+	}
+
 }

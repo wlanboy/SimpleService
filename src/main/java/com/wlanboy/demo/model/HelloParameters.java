@@ -2,46 +2,20 @@ package com.wlanboy.demo.model;
 
 import org.springframework.hateoas.ResourceSupport;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@SuppressWarnings("unused")
+@Data
+@EqualsAndHashCode(callSuper=false)
 public class HelloParameters extends ResourceSupport {
-	private Integer counter;
+	private Long identifier;
 	private String target;
 	private String status;
-	
-	public HelloParameters() {
-		
-	}
 
-	public HelloParameters(Integer counter, String target, String status) {
-		this.counter = counter;
+	public HelloParameters(Long identifier, String target, String status) {
+		this.identifier = identifier;
 		this.target = target;
 		this.status = status;
-	}	
-
-	public Integer getCounter() {
-		return counter;
 	}
-	public void setCounter(Integer counter) {
-		this.counter = counter;
-	}
-
-	public String getTarget() {
-		return target;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	@Override
-	public String toString() {
-		return "HelloParameters [Counter=" + counter + ",target=" + target + ", status=" + status + "]";
-	}
-
 }
