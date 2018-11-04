@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +43,14 @@ public class HelloController {
 		logger.info("HelloParameters created.");
 		return new ResponseEntity<HelloParameters>(helloString, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/hello", method = RequestMethod.POST)
+	public HttpEntity<HelloParameters> helloPost(@RequestBody HelloParameters parameters) {
+		parameters.setIdentifier(parameters.getIdentifier()+1);
+
+		logger.info("HelloParameters created.");
+		return new ResponseEntity<HelloParameters>(parameters, HttpStatus.OK);
+	}	
 
 	/**
 	 * http://127.0.0.1:8001/datetime
