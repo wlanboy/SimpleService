@@ -13,3 +13,4 @@ buildNumber.properties
 .settings
 .sts4-cache
 simpleservice.log
+.factorypath
