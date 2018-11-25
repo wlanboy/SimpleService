@@ -49,7 +49,7 @@ public class HelloController {
 		parameters.setIdentifier(parameters.getIdentifier()+1);
 
 		logger.info("HelloParameters created.");
-		return new ResponseEntity<HelloParameters>(parameters, HttpStatus.OK);
+		return new ResponseEntity<HelloParameters>(parameters, HttpStatus.CREATED);
 	}	
 
 	/**
