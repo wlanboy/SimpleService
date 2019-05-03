@@ -23,4 +23,5 @@ java -jar target\SimpleService.jar
 docker build -t simpleservice:latest . --build-arg JAR_FILE=./target/SimpleService.jar
 
 ## Docker run
-docker run --name simpleservice -d -p 8888:8888 --link serviceregistry:serviceregistry -v /tmp:/tmp -e EUREKA_ZONE=$EUREKA_ZONE simpleservice:latest
+export DOCKERHOST=192.168.0.100
+docker run --name simpleservice -d -p 8888:8888 -v /tmp:/tmp -e EUREKA_ZONE=http://$DOCKERHOST:8761/eureka/ simpleservice:latest
