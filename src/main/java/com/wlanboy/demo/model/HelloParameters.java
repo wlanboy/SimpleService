@@ -2,12 +2,7 @@ package com.wlanboy.demo.model;
 
 import org.springframework.hateoas.ResourceSupport;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 @SuppressWarnings("unused")
-@Data
-@EqualsAndHashCode(callSuper=false)
 public class HelloParameters extends ResourceSupport {
 	private Long identifier;
 	private String target;
@@ -18,4 +13,29 @@ public class HelloParameters extends ResourceSupport {
 		this.target = target;
 		this.status = status;
 	}
+
+	public Long getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Long identifier) {
+		this.identifier = identifier;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 }
