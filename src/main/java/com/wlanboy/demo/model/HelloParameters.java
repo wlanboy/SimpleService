@@ -14,6 +14,10 @@ public class HelloParameters extends ResourceSupport {
 		this.status = status;
 	}
 
+	public HelloParameters() {
+
+	}
+	
 	public Long getIdentifier() {
 		return identifier;
 	}
