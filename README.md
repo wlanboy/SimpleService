@@ -1,5 +1,5 @@
 # SimpleService
-Simple Spring Rest Service using Eureka, Cloud Config and Zipkin
+Simple Spring Rest Service using Cloud Config, Spring Data, PostgreSQL, Hateos
 
 ## Dependencies
 At least: Java 8 and Maven 3.5
@@ -9,16 +9,19 @@ mvn package -DskipTests=true
 
 ## Run Simple REST HATEOS Service
 ### Environment variables
-export DOCKERHOST=192.168.0.100
+export LOGSTASH=127.0.0.1:5044
 
 ### Windows
-java -jar target\SimpleService.jar
+java -jar target\simpleservice-0.1.1-SNAPSHOT.jar
 
 ### Linux (service enabled)
-./target/SimpleService.jar start
+./target/simpleservice-0.1.1-SNAPSHOT.jar start
 
 ## Docker build
-docker build -t simpleservice:latest . --build-arg JAR_FILE=./target/SimpleService.jar
+docker build -t simpleservice:latest . --build-arg JAR_FILE=./target/simpleservice-0.1.1-SNAPSHOT.jar
 
-## Docker run
-docker run --name simpleservice -d -p 8001:8001 -v /tmp:/tmp simpleservice:latest
+## Docker run PostgreSQL
+docker run --name postgres -d -p 5432:5432 -e POSTGRES_PASSWORD=audit -e POSTGRES_USER=audit -e POSTGRES_DB=audit postgres:11.4-alpine
+
+## Docker run service
+docker run --name simpleservice -d -p 8201:8201 -v /tmp:/tmp simpleservice:latest
