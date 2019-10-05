@@ -9,7 +9,7 @@
 	<version>0.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>SimpleService</name>
+	<name>simpleservice</name>
 	<description>Simple REST Service using Spring Boot, Spring Cloud and Zipkin</description>
 
 	<parent>
