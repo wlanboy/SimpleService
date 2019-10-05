@@ -2,7 +2,6 @@ package com.wlanboy.demo.controller;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,29 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.wlanboy.demo.model.AuditLog;
-import com.wlanboy.demo.model.AuditMapper;
-import com.wlanboy.demo.repository.AuditData;
-import com.wlanboy.demo.repository.AuditRepository;
 
 @RestController
 public class AuditController {
 
 	private static final Logger logger = Logger.getLogger(AuditController.class.getCanonicalName());
 
-	static AtomicInteger counter = new AtomicInteger(0);
-
 	@Autowired
-	private AuditRepository auditDB;
+	private AuditService auditService;
 
 	@RequestMapping(value = "/audit", method = RequestMethod.POST)
 	public HttpEntity<AuditLog> auditPost(@RequestBody AuditLog audit) {
 
-		AuditData entity = AuditMapper.getAuditData(audit);
-		entity.setCounter(Long.valueOf(counter.getAndIncrement()));
-
-		entity = auditDB.save(entity);
-		logger.info(String.format("AuditLog created ( %s ).", entity.getId()));
-		AuditLog auditResponse = AuditMapper.getAuditLog(entity);
+		AuditLog auditResponse = auditService.saveAuditLog(audit);
 
 		return new ResponseEntity<AuditLog>(auditResponse, HttpStatus.CREATED);
 	}
@@ -50,14 +39,12 @@ public class AuditController {
 	@RequestMapping(value = "/audit/{identifier}", method = RequestMethod.GET)
 	public ResponseEntity<AuditLog> getById(@PathVariable(value = "identifier") Long identifier) {
 
-		logger.info("ID: (" + identifier + ").");
+		Optional<AuditLog> auditResponse = auditService.findById(identifier);
 
-		Optional<AuditData> entity = auditDB.findById(identifier);
-		if (entity.isPresent()) {
+		if (auditResponse.isPresent()) {
 			logger.info(String.format("AuditLog found ( %s ).", identifier));
 
-			AuditLog auditResponse = AuditMapper.getAuditLog(entity.get());
-			return ResponseEntity.ok(auditResponse);
+			return ResponseEntity.ok(auditResponse.get());
 		} else {
 			logger.info(String.format("AuditLog not found ( %s ).", identifier));
 			return ResponseEntity.notFound().build();
@@ -69,14 +56,10 @@ public class AuditController {
 	public ResponseEntity<Page<AuditLog>> getAll(@RequestParam("page") Optional<Integer> page,
 			@RequestParam("size") Optional<Integer> size, UriComponentsBuilder uriBuilder) {
 
-		
 		PageRequest pagerequest = PageRequest.of(page.orElse(0), size.orElse(10));
 
-		Page<AuditData> entity = auditDB.findAll(pagerequest);
-		if (entity != null) {
-			logger.info(String.format("AuditLogs found ( %s ).", entity.getNumberOfElements()));
-
-			Page<AuditLog> auditResponse = entity.map(data -> AuditMapper.getAuditLog(data));
+		Page<AuditLog> auditResponse = auditService.findAll(pagerequest);
+		if (auditResponse != null) {
 			return ResponseEntity.ok(auditResponse);
 		} else {
 			logger.info("AuditLogs not found.");
