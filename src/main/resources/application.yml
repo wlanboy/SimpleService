@@ -7,7 +7,7 @@ spring:
       uri: http://cloudconfig:8888
 
 server:
-  port: ${PORT:8001}
+  port: ${PORT:8201}
 
 feign:
   hystrix:
