@@ -2,7 +2,8 @@ package com.wlanboy.demo.controller;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ import com.wlanboy.demo.repository.AuditRepository;
 @Service
 public class AuditService {
 
-	private static final Logger logger = Logger.getLogger(AuditService.class.getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(AuditService.class);
 	
 	static AtomicInteger counter = new AtomicInteger(0);
 
@@ -29,14 +30,13 @@ public class AuditService {
 		entity.setCounter(Long.valueOf(counter.getAndIncrement()));
 
 		entity = auditDB.save(entity);
-		logger.info(String.format("AuditLog created ( %s ).", entity.getId()));
-		AuditLog auditResponse = AuditMapper.getAuditLog(entity);
-		
-		return auditResponse;
+		logger.info("AuditLog created ( {} ).", entity.getId());
+
+		return AuditMapper.getAuditLog(entity);
 	}
 
 	public Optional<AuditLog> findById(Long identifier) {
-		logger.info("AuditData byId: (" + identifier + ").");
+		logger.info("AuditData byId: ( {} )",identifier);
 
 		Optional<AuditData> entity = auditDB.findById(identifier);
 		
@@ -51,10 +51,9 @@ public class AuditService {
 		Page<AuditLog> auditResponse = null;
 		
 		Page<AuditData> entity = auditDB.findAll(pagerequest);
-		if (entity != null) { 
-			logger.info(String.format("AuditLogs found ( %s ).", entity.getNumberOfElements()));
-			auditResponse = entity.map(data -> AuditMapper.getAuditLog(data));
-		}
+		logger.info("AuditLogs found ( {} ).", entity.getNumberOfElements());
+		auditResponse = entity.map(AuditMapper::getAuditLog);
+
 		return auditResponse;
 	}
 }

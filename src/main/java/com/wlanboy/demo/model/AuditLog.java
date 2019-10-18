@@ -29,8 +29,6 @@ public class AuditLog extends ResourceSupport {
 	private String hash;
 	private String counter;
 
-	public AuditLog() {}
-
 	public Long getIdentifier() {
 		return identifier;
 	}
@@ -85,6 +83,74 @@ public class AuditLog extends ResourceSupport {
 
 	public void setCounter(String counter) {
 		this.counter = counter;
+	}
+
+	@Override
+	public String toString() {
+		return "AuditLog [identifier=" + identifier + ", target=" + target + ", status=" + status + ", createDateTime="
+				+ createDateTime + ", updateDateTime=" + updateDateTime + ", hash=" + hash + ", counter=" + counter
+				+ "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((counter == null) ? 0 : counter.hashCode());
+		result = prime * result + ((createDateTime == null) ? 0 : createDateTime.hashCode());
+		result = prime * result + ((hash == null) ? 0 : hash.hashCode());
+		result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((target == null) ? 0 : target.hashCode());
+		result = prime * result + ((updateDateTime == null) ? 0 : updateDateTime.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AuditLog other = (AuditLog) obj;
+		if (counter == null) {
+			if (other.counter != null)
+				return false;
+		} else if (!counter.equals(other.counter))
+			return false;
+		if (createDateTime == null) {
+			if (other.createDateTime != null)
+				return false;
+		} else if (!createDateTime.equals(other.createDateTime))
+			return false;
+		if (hash == null) {
+			if (other.hash != null)
+				return false;
+		} else if (!hash.equals(other.hash))
+			return false;
+		if (identifier == null) {
+			if (other.identifier != null)
+				return false;
+		} else if (!identifier.equals(other.identifier))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (target == null) {
+			if (other.target != null)
+				return false;
+		} else if (!target.equals(other.target))
+			return false;
+		if (updateDateTime == null) {
+			if (other.updateDateTime != null)
+				return false;
+		} else if (!updateDateTime.equals(other.updateDateTime))
+			return false;
+		return true;
 	}
 
 }

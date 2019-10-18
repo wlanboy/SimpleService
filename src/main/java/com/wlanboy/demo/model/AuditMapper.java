@@ -6,6 +6,10 @@ import com.wlanboy.demo.repository.AuditData;
 
 public final class AuditMapper {
 
+	private AuditMapper () {
+		
+	}
+	
 	public static AuditData getAuditData(AuditLog entity) {
 		AuditData copy = new AuditData();
 		copy.setId(entity.getIdentifier());
