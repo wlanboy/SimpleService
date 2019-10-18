@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ public class AuditController {
 	@Autowired
 	private AuditService auditService;
 
-	@GetMapping(value = "/audit")
+	@PostMapping(value = "/audit")
 	public HttpEntity<AuditLog> auditPost(@RequestBody AuditLog audit) {
 
 		AuditLog auditResponse = auditService.saveAuditLog(audit);
@@ -78,7 +79,7 @@ public class AuditController {
 
 		logger.info("DateTime created.");
 		LocalDateTime now = LocalDateTime.now();
-		return new ResponseEntity<String>(now.toString(), HttpStatus.OK);
+		return new ResponseEntity<>(now.toString(), HttpStatus.OK);
 	}
 
 }
