@@ -4,10 +4,10 @@ Simple Spring Rest Service using Cloud Config, Spring Data, PostgreSQL, Hateos
 ## Dependencies
 At least: Java 8 and Maven 3.5
 
-## Build Simple REST HATEOS Service
+## Build 
 mvn package -DskipTests=true
 
-## Run Simple REST HATEOS Service
+## Run 
 ### Environment variables
 export LOGSTASH=127.0.0.1:5044
 
