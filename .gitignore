@@ -12,5 +12,5 @@ buildNumber.properties
 !/.mvn/wrapper/maven-wrapper.jar
 .settings
 .sts4-cache
-simpleservice.log
 .factorypath
+.dbeaver/
