@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.Id;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,7 +17,7 @@ import com.wlanboy.demo.repository.AuditData;
 
 @SuppressWarnings("unused")
 @JsonIgnoreProperties
-public class AuditLog extends ResourceSupport {
+public class AuditLog extends RepresentationModel<AuditLog> {
 	
 	private Long identifier;
 	@NotNull
