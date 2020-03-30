@@ -8,10 +8,7 @@ pipeline {
   }
   parameters {
       booleanParam(defaultValue: false, description: 'Publish to DockerHub', name: 'PUBLISHIMAGE')
-  }
-  environment {
-    LOGSTASH = 'nuc:5044'
-  }  
+  } 
   stages {
     stage('Git') {
       steps {
