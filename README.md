@@ -1,8 +1,10 @@
+![Java CI with Maven](https://github.com/wlanboy/SimpleService/workflows/Java%20CI%20with%20Maven/badge.svg?branch=master)
+
 # SimpleService
 Simple Spring Rest Service using Cloud Config, Spring Data, PostgreSQL, Hateos
 
 ## Dependencies
-At least: Java 8 and Maven 3.5
+At least: Java 11 and Maven 3.5
 
 ## Build 
 mvn package -DskipTests=true
