@@ -19,9 +19,9 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       env:
-         JAR_FILE: ./target/mirrorservice-0.1.1-SNAPSHOT.jar
+         JAR_FILE: ./target/simpleservice-0.1.1-SNAPSHOT.jar
       with:
-        name: wlanboy/mirrorservice
+        name: wlanboy/simpleservice
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest"
