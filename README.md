@@ -1,4 +1,4 @@
-![Java CI with Maven](https://github.com/wlanboy/SimpleService/workflows/Java%20CI%20with%20Maven/badge.svg?branch=master)
+![Java CI with Maven](https://github.com/wlanboy/SimpleService/workflows/Java%20CI%20with%20Maven/badge.svg?branch=master) ![Docker build and publish image](https://github.com/wlanboy/SimpleService/workflows/Docker%20build%20and%20publish%20image/badge.svg)
 
 # SimpleService
 Simple Spring Rest Service using Cloud Config, Spring Data, PostgreSQL, Hateos
