@@ -3,13 +3,13 @@ package com.wlanboy.demo.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.Id;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,11 +18,11 @@ import com.wlanboy.demo.repository.AuditData;
 @SuppressWarnings("unused")
 @JsonIgnoreProperties
 public class AuditLog extends RepresentationModel<AuditLog> {
-	
+
 	private Long identifier;
-	@NotNull
+	@NonNull
 	private String target;
-	@NotNull
+	@NonNull
 	private String status;
 	private LocalDateTime createDateTime;
 	private LocalDateTime updateDateTime;
