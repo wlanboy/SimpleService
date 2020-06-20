@@ -22,6 +22,13 @@ java -jar target\simpleservice-0.1.1-SNAPSHOT.jar
 ## Docker build
 docker build -t simpleservice:latest . --build-arg JAR_FILE=./target/simpleservice-0.1.1-SNAPSHOT.jar
 
+## Docker publish to github registry
+- docker tag serviceconfig:latest docker.pkg.github.com/wlanboy/simpleservice/simpleservice:latest
+- docker push docker.pkg.github.com/wlanboy/simpleservice/simpleservice:latest
+
+## Docker Registry repro
+- https://github.com/wlanboy/SimpleService/packages/278496
+
 ## Docker run PostgreSQL
 docker run --name postgres -d -p 5432:5432 -e POSTGRES_PASSWORD=audit -e POSTGRES_USER=audit -e POSTGRES_DB=audit postgres:11.4-alpine
 
