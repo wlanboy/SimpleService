@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: simpleservice
+  name: simpleservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simpleservice
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: simpleservice
+    spec:
+      containers:
+      - image: wlanboy/simpleservice
+        name: simpleservice
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: simpleservice
+  name: simpleservice
+spec:
+  ports:
+  - name: 8201-8201
+    port: 8201
+    protocol: TCP
+    targetPort: 8201
+  selector:
+    app: simpleservice
+  type: ClusterIP
+status:
+  loadBalancer: {}
