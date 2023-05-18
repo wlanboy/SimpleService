@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.wlanboy.demo.model.AuditLog;
 import com.wlanboy.demo.model.AuditMapper;
 import com.wlanboy.demo.repository.AuditData;
-import com.wlanboy.demo.repository.AuditRepository;
+import com.wlanboy.demo.repository.AuditRepositorySimple;
 
 @Service
 public class AuditService {
@@ -23,7 +23,7 @@ public class AuditService {
 	static AtomicInteger counter = new AtomicInteger(0);
 
 	@Autowired
-	private AuditRepository auditDB;
+	private AuditRepositorySimple auditDB;
 
 	public AuditLog saveAuditLog(AuditLog audit) {
 		AuditData entity = AuditMapper.getAuditData(audit);
