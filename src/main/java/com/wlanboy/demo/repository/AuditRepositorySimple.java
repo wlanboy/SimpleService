@@ -1,6 +1,8 @@
 package com.wlanboy.demo.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,5 +20,10 @@ public interface AuditRepositorySimple extends JpaRepository<AuditData, Long> {
 			LocalDateTime start,
 			LocalDateTime end,
 			Pageable pageable);
+
+	Optional<AuditData> findTopByOrderByIdDesc();
+	List<AuditData> findAllByOrderByIdAsc();
+	Optional<AuditData> findById(Long id);
+	Optional<AuditData> findByHash(String hash);
 
 }

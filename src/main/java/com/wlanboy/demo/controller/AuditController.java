@@ -1,6 +1,7 @@
 package com.wlanboy.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,22 @@ public class AuditController {
 
 		logger.info("AuditLogs found for target {}: {}", target, result.getNumberOfElements());
 		return ResponseEntity.ok(result);
+	}
+
+	@GetMapping("/{id}/verify")
+	public ResponseEntity<String> verifyEntry(@PathVariable Long id) {
+
+		Optional<Boolean> result = auditService.verifyEntry(id);
+
+		if (result.isEmpty()) {
+			return ResponseEntity.status(404).body("Audit entry " + id + " not found.");
+		}
+
+		if (result.get()) {
+			return ResponseEntity.ok("Audit entry " + id + " is valid.");
+		} else {
+			return ResponseEntity.status(409).body("Audit entry " + id + " is INVALID.");
+		}
 	}
 
 }

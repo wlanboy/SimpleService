@@ -43,5 +43,8 @@ public class AuditLog extends RepresentationModel<AuditLog> {
 
     private String hash;
 
+    @Column(nullable = false, name = "previous_hash")
+    private String previousHash;
+
     private Long counter;
 }

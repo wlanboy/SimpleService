@@ -9,17 +9,17 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class AuditMapper {
 
-    public AuditData toEntity(AuditLog log) {
+    public AuditData toEntity(AuditLog log, String previousHash) {
         if (log == null) {
             return null;
         }
 
         return AuditData.builder()
-                .id(log.getIdentifier())
                 .target(log.getTarget())
                 .status(log.getStatus())
-                .hash(hash(log))
-                .counter(log.getCounter() != null ? Long.valueOf(log.getCounter()) : null)
+                .previousHash(previousHash)
+                .hash(hash(log, previousHash))
+                .counter(log.getCounter() != null ? log.getCounter() : 0L)
                 .build();
     }
 
@@ -33,14 +33,17 @@ public class AuditMapper {
                 .target(data.getTarget())
                 .status(data.getStatus())
                 .hash(data.getHash())
+                .previousHash(data.getPreviousHash())
                 .createDateTime(data.getCreateDateTime())
                 .updateDateTime(data.getUpdateDateTime())
                 .counter(data.getCounter())
                 .build();
     }
 
-    private String hash(AuditLog log) {
-        String input = log.getTarget() + log.getStatus() + log.getCounter();
+    private String hash(AuditLog log, String previousHash) {
+        Long counter = log.getCounter() != null ? log.getCounter() : 0L;
+        String input = log.getTarget() + log.getStatus() + counter + previousHash;
         return BCrypt.hashpw(input, BCrypt.gensalt());
     }
 }
+

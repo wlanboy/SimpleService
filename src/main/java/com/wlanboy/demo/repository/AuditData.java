@@ -18,7 +18,7 @@ import lombok.*;
 public class AuditData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false)
@@ -35,6 +35,9 @@ public class AuditData {
     private LocalDateTime updateDateTime;
 
     private String hash;
+
+    @Column(name = "previous_hash")
+    private String previousHash;    
 
     private Long counter;
 }
