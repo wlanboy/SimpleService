@@ -4,30 +4,43 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.wlanboy.demo.repository.AuditData;
 
-public final class AuditMapper {
+import lombok.experimental.UtilityClass;
 
-	private AuditMapper () {
-		
-	}
-	
-	public static AuditData getAuditData(AuditLog entity) {
-		AuditData copy = new AuditData();
-		copy.setId(entity.getIdentifier());
-		copy.setStatus(entity.getStatus());
-		copy.setTarget(entity.getTarget());
-		copy.setHash(BCrypt.hashpw(entity.getTarget() + entity.getStatus() + entity.getCounter(), BCrypt.gensalt()));
-		return copy;
-	}
+@UtilityClass
+public class AuditMapper {
 
-	public static AuditLog getAuditLog(AuditData entity) {
-		AuditLog copy = new AuditLog();
+    public AuditData toEntity(AuditLog log) {
+        if (log == null) {
+            return null;
+        }
 
-		copy.setIdentifier(entity.getId());
-		copy.setTarget(entity.getTarget());
-		copy.setStatus(entity.getStatus());
-		copy.setHash(entity.getHash());
-		copy.setCreateDateTime(entity.getCreateDateTime());
-		copy.setUpdateDateTime(entity.getUpdateDateTime());
-		return copy;
-	}
+        return AuditData.builder()
+                .id(log.getIdentifier())
+                .target(log.getTarget())
+                .status(log.getStatus())
+                .hash(hash(log))
+                .counter(log.getCounter() != null ? Long.valueOf(log.getCounter()) : null)
+                .build();
+    }
+
+    public AuditLog toModel(AuditData data) {
+        if (data == null) {
+            return null;
+        }
+
+        return AuditLog.builder()
+                .identifier(data.getId())
+                .target(data.getTarget())
+                .status(data.getStatus())
+                .hash(data.getHash())
+                .createDateTime(data.getCreateDateTime())
+                .updateDateTime(data.getUpdateDateTime())
+                .counter(data.getCounter())
+                .build();
+    }
+
+    private String hash(AuditLog log) {
+        String input = log.getTarget() + log.getStatus() + log.getCounter();
+        return BCrypt.hashpw(input, BCrypt.gensalt());
+    }
 }

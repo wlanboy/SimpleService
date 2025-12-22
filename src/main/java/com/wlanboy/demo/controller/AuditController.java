@@ -1,85 +1,78 @@
 package com.wlanboy.demo.controller;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.bind.annotation.*;
 
 import com.wlanboy.demo.model.AuditLog;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/audit")
 public class AuditController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuditController.class);
 
-	@Autowired
-	private AuditService auditService;
+	private final AuditService auditService;
 
-	@PostMapping(value = "/audit")
-	public HttpEntity<AuditLog> auditPost(@RequestBody AuditLog audit) {
-
-		AuditLog auditResponse = auditService.saveAuditLog(audit);
-
-		return new ResponseEntity<>(auditResponse, HttpStatus.CREATED);
+	@PostMapping
+	public ResponseEntity<AuditLog> createAudit(@Valid @RequestBody AuditLog audit) {
+		AuditLog saved = auditService.saveAuditLog(audit);
+		logger.info("AuditLog created with ID {}", saved.getIdentifier());
+		return ResponseEntity.status(201).body(saved);
 	}
 
-	@GetMapping(value = "/audit/{identifier}")
-	public ResponseEntity<AuditLog> getById(@PathVariable(value = "identifier") Long identifier) {
-
-		Optional<AuditLog> auditResponse = auditService.findById(identifier);
-
-		if (auditResponse.isPresent()) {
-			logger.info("AuditLog found ( {} )", auditResponse.get());
-			return ResponseEntity.ok(auditResponse.get());
-		} else {
-			logger.info("AuditLog not found ( {} )", identifier);
-			return ResponseEntity.notFound().build();
-		}
-
+	@GetMapping("/{id}")
+	public ResponseEntity<AuditLog> getById(@PathVariable Long id) {
+		return auditService.findById(id)
+				.map(audit -> {
+					logger.info("AuditLog found: {}", audit);
+					return ResponseEntity.ok(audit);
+				})
+				.orElseGet(() -> {
+					logger.info("AuditLog not found: {}", id);
+					return ResponseEntity.notFound().build();
+				});
 	}
 
-	@GetMapping(value = "/audit")
-	public ResponseEntity<Page<AuditLog>> getAll(@RequestParam("page") Optional<Integer> page,
-			@RequestParam("size") Optional<Integer> size, UriComponentsBuilder uriBuilder) {
+	@GetMapping
+	public ResponseEntity<Page<AuditLog>> getAll(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
 
-		PageRequest pagerequest = PageRequest.of(page.orElse(0), size.orElse(10));
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<AuditLog> result = auditService.findAll(pageRequest);
 
-		Page<AuditLog> auditResponse = auditService.findAll(pagerequest);
-		if (auditResponse != null) {
-			logger.info("AuditLogs found found {}",auditResponse.getNumberOfElements());
-			return ResponseEntity.ok(auditResponse);
-		} else {
-			logger.info("AuditLogs not found.");
-			return ResponseEntity.notFound().build();
-		}
-
+		logger.info("AuditLogs returned: {}", result.getNumberOfElements());
+		return ResponseEntity.ok(result);
 	}
 
-	/**
-	 * http://127.0.0.1:8001/datetime
-	 * 
-	 * @return String template
-	 */
-	@GetMapping(value = "/datetime")
-	public HttpEntity<String> datetime() {
+	@GetMapping("/datetime")
+	public ResponseEntity<String> datetime() {
+		logger.info("DateTime requested");
+		return ResponseEntity.ok(LocalDateTime.now().toString());
+	}
 
-		logger.info("DateTime created.");
-		LocalDateTime now = LocalDateTime.now();
-		return new ResponseEntity<>(now.toString(), HttpStatus.OK);
+	@GetMapping("/search")
+	public ResponseEntity<Page<AuditLog>> searchByTarget(
+			@RequestParam String target,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<AuditLog> result = auditService.findByTarget(target, pageRequest);
+
+		logger.info("AuditLogs found for target {}: {}", target, result.getNumberOfElements());
+		return ResponseEntity.ok(result);
 	}
 
 }

@@ -1,11 +1,11 @@
 package com.wlanboy.demo.controller;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,45 +15,49 @@ import com.wlanboy.demo.model.AuditMapper;
 import com.wlanboy.demo.repository.AuditData;
 import com.wlanboy.demo.repository.AuditRepositorySimple;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AuditService {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuditService.class);
-	
-	static AtomicInteger counter = new AtomicInteger(0);
 
-	@Autowired
-	private AuditRepositorySimple auditDB;
+	private static final AtomicLong counter = new AtomicLong(0);
+
+	private final AuditRepositorySimple auditDB;
 
 	public AuditLog saveAuditLog(AuditLog audit) {
-		AuditData entity = AuditMapper.getAuditData(audit);
-		entity.setCounter(Long.valueOf(counter.getAndIncrement()));
+		AuditData entity = AuditMapper.toEntity(audit);
+		entity.setCounter(counter.getAndIncrement());
 
 		entity = auditDB.save(entity);
 		logger.info("AuditLog created ( {} ).", entity.getId());
 
-		return AuditMapper.getAuditLog(entity);
+		return AuditMapper.toModel(entity);
 	}
 
-	public Optional<AuditLog> findById(Long identifier) {
-		logger.info("AuditData byId: ( {} )",identifier);
+	public Optional<AuditLog> findById(Long id) {
+		logger.info("AuditData byId: ( {} )", id);
 
-		Optional<AuditData> entity = auditDB.findById(identifier);
-		
-		Optional<AuditLog> auditResponse = Optional.empty();
-		
-		if (entity.isPresent())
-			auditResponse = Optional.of(AuditMapper.getAuditLog(entity.get()));
-		return auditResponse;
+		return auditDB.findById(id)
+				.map(AuditMapper::toModel);
 	}
 
-	public Page<AuditLog> findAll(PageRequest pagerequest) {
-		Page<AuditLog> auditResponse = null;
-		
-		Page<AuditData> entity = auditDB.findAll(pagerequest);
-		logger.info("AuditLogs found ( {} ).", entity.getNumberOfElements());
-		auditResponse = entity.map(AuditMapper::getAuditLog);
+	public Page<AuditLog> findAll(PageRequest pageRequest) {
+		Page<AuditData> entityPage = auditDB.findAll(pageRequest);
 
-		return auditResponse;
+		logger.info("AuditLogs found ( {} ).", entityPage.getNumberOfElements());
+
+		return entityPage.map(AuditMapper::toModel);
 	}
+
+	public Page<AuditLog> findByTarget(String target, PageRequest pageRequest) {
+		Page<AuditData> entityPage = auditDB.findAllByTarget(target, pageRequest);
+
+		logger.info("AuditLogs found for target '{}': {}", target, entityPage.getNumberOfElements());
+
+		return entityPage.map(AuditMapper::toModel);
+	}
+
 }
