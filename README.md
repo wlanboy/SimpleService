@@ -4,14 +4,11 @@
 Simple Spring Rest Service using Cloud Config, Spring Data, PostgreSQL, Hateos
 
 ## Dependencies
-At least: Java 11 and Maven 3.5
+At least: Java 21 and Maven 3.9.9
 
 ## Build 
-mvn package -DskipTests=true
-
+mvn package
 ## Run 
-### Environment variables
-export LOGSTASH=127.0.0.1:5044
 
 ### Windows
 java -jar target\simpleservice-0.1.1-SNAPSHOT.jar
@@ -26,11 +23,5 @@ docker build -t simpleservice:latest . --build-arg JAR_FILE=./target/simpleservi
 - docker tag serviceconfig:latest docker.pkg.github.com/wlanboy/simpleservice/simpleservice:latest
 - docker push docker.pkg.github.com/wlanboy/simpleservice/simpleservice:latest
 
-## Docker Registry repro
-- https://github.com/wlanboy/SimpleService/packages/278496
-
-## Docker run PostgreSQL
-docker run --name postgres -d -p 5432:5432 -e POSTGRES_PASSWORD=audit -e POSTGRES_USER=audit -e POSTGRES_DB=audit postgres:11.4-alpine
-
 ## Docker run service
-docker run --name simpleservice -d -p 8201:8201 -v /tmp:/tmp simpleservice:latest
+docker run --name simpleservice -d -p 8201:8201 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:latest
