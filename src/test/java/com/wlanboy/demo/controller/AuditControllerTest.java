@@ -1,6 +1,7 @@
 package com.wlanboy.demo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wlanboy.demo.GenesisInitializer;
 import com.wlanboy.demo.model.AuditLog;
 import com.wlanboy.demo.repository.AuditRepositorySimple;
 
@@ -33,9 +34,13 @@ class AuditControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private GenesisInitializer genesisInitializer;
+
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         auditRepository.deleteAll();
+        genesisInitializer.createGenesisBlock(auditRepository).run(null);
     }
 
     @Test
@@ -99,8 +104,8 @@ class AuditControllerTest {
 
         mockMvc.perform(get("/audit?page=0&size=10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)))
-                .andExpect(jsonPath("$.content[0].target", is("system")));
+                .andExpect(jsonPath("$.content", hasSize(3)))
+                .andExpect(jsonPath("$.content[0].target", is("GENESIS")));
     }
 
     @Test

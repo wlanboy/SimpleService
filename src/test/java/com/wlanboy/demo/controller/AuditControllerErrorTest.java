@@ -1,5 +1,6 @@
 package com.wlanboy.demo.controller;
 
+import com.wlanboy.demo.GenesisInitializer;
 import com.wlanboy.demo.repository.AuditRepositorySimple;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +28,13 @@ class AuditControllerErrorTest {
     @Autowired
     private AuditRepositorySimple auditRepository;
 
+    @Autowired
+    private GenesisInitializer genesisInitializer;
+
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         auditRepository.deleteAll();
+        genesisInitializer.createGenesisBlock(auditRepository).run(null);
     }
 
     // ❌ Fehlerfall 1: GET /audit/{id} → ID existiert nicht
