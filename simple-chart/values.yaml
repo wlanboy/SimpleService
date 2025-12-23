@@ -11,7 +11,7 @@ hosts:
   - simpleservice.gmk.lan
 
 service:
-  port: 4500
+  port: 8201
 
 persistence:
   enabled: true
