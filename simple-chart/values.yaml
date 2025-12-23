@@ -1,0 +1,29 @@
+replicaCount: 1
+deploymentName: mirrorapi
+namespace: mirror
+image:
+  repository: wlanboy/simpleservice
+  tag: latest
+  pullPolicy: Always
+
+hosts: 
+  - simpleservice.tp.lan
+  - simpleservice.gmk.lan
+
+service:
+  port: 4500
+
+persistence:
+  enabled: true
+  size: 100Mi
+  storageClass: standard
+
+istio:
+  gateway: simpleservice-gateway
+  gatewayNamespace: "istio-ingress"
+
+certmanager:
+  enabled: true
+  issuer: local-ca-issuer
+  kind: ClusterIssuer
+  secretName: simpleservice-tls
