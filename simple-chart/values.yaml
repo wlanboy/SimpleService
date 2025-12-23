@@ -16,7 +16,7 @@ service:
 persistence:
   enabled: true
   size: 100Mi
-  storageClass: standard
+  storageClass: local-path
 
 istio:
   gateway: simpleservice-gateway
