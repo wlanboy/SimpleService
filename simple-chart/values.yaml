@@ -1,6 +1,6 @@
 replicaCount: 1
-deploymentName: mirrorapi
-namespace: mirror
+deploymentName: simpleservice
+namespace: simpleservice
 image:
   repository: wlanboy/simpleservice
   tag: latest
