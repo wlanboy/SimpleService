@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-// Neuer Package-Pfad in Spring Boot 4.0.1
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -40,22 +39,24 @@ class AuditVerifyTest {
     @BeforeEach
     void setup() throws Exception {
         auditRepository.deleteAll();
-        // Falls GenesisInitializer ein CommandLineRunner ist:
         genesisInitializer.createGenesisBlock(auditRepository).run(null);
     }
 
     @Test
     void testVerifyValidEntry() throws Exception {
+        // HINZUFÜGEN: hash und previousHash für die Validierung
         AuditLog log = AuditLog.builder()
                 .target("system")
                 .status("OK")
                 .counter(1L)
+                .previousHash("GENESIS")
+                .hash("dummy-hash")
                 .build();
 
         String response = mockMvc.perform(post("/audit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(log)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isCreated()) // Erwartet jetzt 201 statt 400
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -69,10 +70,13 @@ class AuditVerifyTest {
 
     @Test
     void testVerifyInvalidEntryAfterManipulation() throws Exception {
+        // HINZUFÜGEN: hash und previousHash für die Validierung
         AuditLog log = AuditLog.builder()
                 .target("system")
                 .status("OK")
                 .counter(1L)
+                .previousHash("GENESIS")
+                .hash("dummy-hash")
                 .build();
 
         String response = mockMvc.perform(post("/audit")

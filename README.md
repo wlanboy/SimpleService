@@ -17,7 +17,7 @@ java -jar target\simpleservice-0.1.1-SNAPSHOT.jar
 ./target/simpleservice-0.1.1-SNAPSHOT.jar start
 
 ## Docker build
-docker build -t simpleservice:latest . --build-arg JAR_FILE=./target/simpleservice-0.1.1-SNAPSHOT.jar
+docker build -t simpleservice:latest .
 
 ## Docker publish to github registry
 - docker tag serviceconfig:latest docker.pkg.github.com/wlanboy/simpleservice/simpleservice:latest

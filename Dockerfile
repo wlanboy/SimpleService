@@ -37,11 +37,11 @@ RUN cp target/simpleservice-0.1.1-SNAPSHOT.jar app.jar && \
 FROM registry.access.redhat.com/ubi9/openjdk-25-runtime:latest
 
 # OCI-konforme Labels
-LABEL org.opencontainers.image.title="KubeEvent Java" \
-      org.opencontainers.image.description="Kubernetes Event Watcher and Dashboard" \
+LABEL org.opencontainers.image.title="simpleservice" \
+      org.opencontainers.image.description="Simple Spring Rest Service playing Blockchain" \
       org.opencontainers.image.version="0.0.1-SNAPSHOT" \
       org.opencontainers.image.vendor="wlanboy" \
-      org.opencontainers.image.source="https://github.com/wlanboy/kubeeventjava" \
+      org.opencontainers.image.source="https://github.com/wlanboy/SimpleService" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.base.name="eclipse-temurin:25-jre"
 

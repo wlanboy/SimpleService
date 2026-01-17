@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -22,79 +21,55 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuditService {
 
-	private static final Logger logger = LoggerFactory.getLogger(AuditService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuditService.class);
+    private final AuditRepositorySimple auditDB;
+    // Injiziere den Mapper (nicht mehr statisch!), um Compiler-Fehler zu vermeiden
+    private final AuditMapper auditMapper; 
 
-	private static final AtomicLong counter = new AtomicLong(0);
+    public AuditLog saveAuditLog(AuditLog audit) {
+        // Robustere Abfrage des previousHash (verhindert NoSuchElementException bei leerer DB)
+        String previousHash = auditDB.findTopByOrderByIdDesc()
+                .map(AuditData::getHash)
+                .orElse("GENESIS");
 
-	private final AuditRepositorySimple auditDB;
+        // Counter basierend auf dem letzten DB-Eintrag setzen (sicherer als AtomicLong nach Neustart)
+        long nextCounter = auditDB.count();
+        audit.setCounter(nextCounter);
 
-	public AuditLog saveAuditLog(AuditLog audit) {
-		Optional<AuditData> last = auditDB.findTopByOrderByIdDesc();
-		String previousHash = last.get().getHash();
+        // Instanz-Aufruf statt statischer Utility-Aufruf
+        AuditData entity = auditMapper.toEntity(audit, previousHash);
+        entity = auditDB.save(entity);
+        
+        logger.info("AuditLog created with ID: {}", entity.getId());
+        return auditMapper.toModel(entity);
+    }
 
-		audit.setCounter(counter.getAndIncrement());
-		AuditData entity = AuditMapper.toEntity(audit, previousHash);
+    public Optional<AuditLog> findById(Long id) {
+        return auditDB.findById(id).map(auditMapper::toModel);
+    }
 
-		entity = auditDB.save(entity);
-		logger.info("AuditLog created ( {} ).", entity.getId());
+    public Page<AuditLog> findAll(PageRequest pageRequest) {
+        return auditDB.findAll(pageRequest).map(auditMapper::toModel);
+    }
 
-		return AuditMapper.toModel(entity);
-	}
+    public Page<AuditLog> findByTarget(String target, PageRequest pageRequest) {
+        return auditDB.findAllByTarget(target, pageRequest).map(auditMapper::toModel);
+    }
 
-	public Optional<AuditLog> findById(Long id) {
-		logger.info("AuditData byId: ( {} )", id);
+    public Optional<Boolean> verifyEntry(Long id) {
+        Optional<AuditData> opt = auditDB.findById(id);
+        if (opt.isEmpty()) return Optional.empty();
 
-		return auditDB.findById(id)
-				.map(AuditMapper::toModel);
-	}
+        AuditData entry = opt.get();
 
-	public Page<AuditLog> findAll(PageRequest pageRequest) {
-		Page<AuditData> entityPage = auditDB.findAll(pageRequest);
+        // 1. Previous Hash Integrität prüfen
+        if (!"GENESIS".equals(entry.getPreviousHash())) {
+            boolean prevExists = auditDB.findByHash(entry.getPreviousHash()).isPresent();
+            if (!prevExists) return Optional.of(false);
+        }
 
-		logger.info("AuditLogs found ( {} ).", entityPage.getNumberOfElements());
-
-		return entityPage.map(AuditMapper::toModel);
-	}
-
-	public Page<AuditLog> findByTarget(String target, PageRequest pageRequest) {
-		Page<AuditData> entityPage = auditDB.findAllByTarget(target, pageRequest);
-
-		logger.info("AuditLogs found for target '{}': {}", target, entityPage.getNumberOfElements());
-
-		return entityPage.map(AuditMapper::toModel);
-	}
-
-	public Optional<Boolean> verifyEntry(Long id) {
-
-		Optional<AuditData> opt = auditDB.findById(id);
-		if (opt.isEmpty()) {
-			return Optional.empty(); // ← WICHTIG: Not found
-		}
-
-		AuditData entry = opt.get();
-
-		// 1. Previous block prüfen
-		if (!"GENESIS".equals(entry.getPreviousHash())) {
-
-			Optional<AuditData> prev = auditDB.findByHash(entry.getPreviousHash());
-			if (prev.isEmpty()) {
-				return Optional.of(false);
-			}
-
-			if (!entry.getPreviousHash().equals(prev.get().getHash())) {
-				return Optional.of(false);
-			}
-		}
-
-		// 2. Hash prüfen
-		String input = entry.getTarget()
-				+ entry.getStatus()
-				+ entry.getCounter()
-				+ entry.getPreviousHash();
-
-		boolean hashMatches = BCrypt.checkpw(input, entry.getHash());
-
-		return Optional.of(hashMatches);
-	}
-
+        // 2. Daten-Integrität prüfen (BCrypt Hash)
+        String input = entry.getTarget() + entry.getStatus() + entry.getCounter() + entry.getPreviousHash();
+        return Optional.of(BCrypt.checkpw(input, entry.getHash()));
+    }
 }
