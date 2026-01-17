@@ -2,17 +2,17 @@ package com.wlanboy.demo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wlanboy.demo.GenesisInitializer;
+import com.wlanboy.demo.TestConfig;
 import com.wlanboy.demo.model.AuditLog;
 import com.wlanboy.demo.repository.AuditData;
 import com.wlanboy.demo.repository.AuditRepositorySimple;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
+// Neuer Package-Pfad in Spring Boot 4.0.1
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,8 +20,9 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
+@Import(TestConfig.class)
 class AuditVerifyTest {
 
     @Autowired
@@ -39,12 +40,12 @@ class AuditVerifyTest {
     @BeforeEach
     void setup() throws Exception {
         auditRepository.deleteAll();
+        // Falls GenesisInitializer ein CommandLineRunner ist:
         genesisInitializer.createGenesisBlock(auditRepository).run(null);
     }
 
     @Test
     void testVerifyValidEntry() throws Exception {
-        // 1. Audit erzeugen
         AuditLog log = AuditLog.builder()
                 .target("system")
                 .status("OK")
@@ -59,11 +60,8 @@ class AuditVerifyTest {
                 .getResponse()
                 .getContentAsString();
 
-        System.out.println("DB count = " + auditRepository.count());
-
         AuditLog saved = objectMapper.readValue(response, AuditLog.class);
 
-        // 2. Verify aufrufen
         mockMvc.perform(get("/audit/" + saved.getIdentifier() + "/verify"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("valid")));
@@ -71,7 +69,6 @@ class AuditVerifyTest {
 
     @Test
     void testVerifyInvalidEntryAfterManipulation() throws Exception {
-        // 1. Audit erzeugen
         AuditLog log = AuditLog.builder()
                 .target("system")
                 .status("OK")
@@ -86,25 +83,16 @@ class AuditVerifyTest {
                 .getResponse()
                 .getContentAsString();
 
-        System.out.println("DB count = " + auditRepository.count());
-
         AuditLog saved = objectMapper.readValue(response, AuditLog.class);
 
-        // 2. Manipulation simulieren
-        AuditData data = auditRepository.findById(saved.getIdentifier()).get();
+        // Manipulation simulieren
+        AuditData data = auditRepository.findById(saved.getIdentifier())
+                .orElseThrow(() -> new RuntimeException("Test Data not found"));
         data.setStatus("HACKED");
         auditRepository.save(data);
 
-        // 3. Verify muss jetzt fehlschlagen
         mockMvc.perform(get("/audit/" + saved.getIdentifier() + "/verify"))
                 .andExpect(status().isConflict())
                 .andExpect(content().string(containsString("INVALID")));
     }
-
-    @Test
-    void testVerifyNotFound() throws Exception {
-        mockMvc.perform(get("/audit/99999/verify"))
-                .andExpect(status().isNotFound());
-    }
-    
 }

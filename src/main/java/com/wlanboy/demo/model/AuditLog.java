@@ -16,6 +16,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 @Builder
 @Entity
 @Table(name = "audit_log")
