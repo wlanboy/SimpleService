@@ -41,6 +41,7 @@ RUN jdeps \
 # compress zip-9 ist der moderne Ersatz für --compress=2
 # NoClassDefFoundError: java.beans.PropertyEditorSupport -> java.desktop
 # jmx, metrics -> java.management
+# GC notifications will not be available -> jdk.management
 # load jar files (swagger) -> jdk.zipfs
 # needs jlink -> java.instrument
 # jpa needs java.sql.Date -> java.sql
@@ -52,7 +53,7 @@ RUN jdeps \
 # UTF-8 only String handling
 RUN $JAVA_HOME/bin/jlink \
     --module-path /usr/lib/jvm/java-25/jmods \
-    --add-modules java.base,$(cat modules.txt),jdk.crypto.ec,jdk.charsets,java.desktop,java.management,jdk.zipfs,java.instrument,java.sql,java.naming,jdk.unsupported,java.security.jgss,java.security.sasl \
+    --add-modules java.base,$(cat modules.txt),jdk.crypto.ec,jdk.charsets,java.desktop,java.management,jdk.management,jdk.zipfs,java.instrument,java.sql,java.naming,jdk.unsupported,java.security.jgss,java.security.sasl \
     --strip-debug \
     --no-man-pages \
     --no-header-files \
