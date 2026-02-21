@@ -48,7 +48,7 @@ RUN jdeps \
 # jdk25 warnings -> sun.misc.Unsafe, das von Objenesis/CGLIB -> jdk.unsupported
 # org.ietf.jgss.GSSException -> java.security.jgss, java.security.sasl
 # Generational ZGC (Z Garbage Collector) setzen
-# ExitOnOutOfMemoryError OOM killt den Thread, wir wollen aber auch die JVM beenden.
+# ExitOnOutOfMemoryError OOM killt den Thread und die JVM beenden.
 # UTF-8 only String handling
 RUN $JAVA_HOME/bin/jlink \
     --module-path /usr/lib/jvm/java-25/jmods \
