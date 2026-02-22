@@ -103,11 +103,18 @@ ENV PATH="/opt/jre/bin:$PATH"
 
 USER nonroot
 
-# Layer kopieren (wie gehabt)
+# Layer kopieren (stabilste zuerst → bestes Docker-Cache-Verhalten)
 COPY --from=build --chown=65532:65532 /app/extracted/dependencies/ ./
+# → Stabile Third-Party-Dependencies (Spring, H2, springdoc, micrometer...). Ändern sich selten.
 COPY --from=build --chown=65532:65532 /app/extracted/spring-boot-loader/ ./
+# → Spring Boot Launcher. Ändert sich nur bei Spring Boot Version-Updates.
 COPY --from=build --chown=65532:65532 /app/extracted/snapshot-dependencies/ ./
+# → SNAPSHOT-Dependencies. Aktuell leer, aber für zukünftige Nutzung vorgehalten.
+COPY --from=build --chown=65532:65532 /app/extracted/application-resources/ ./
+# → Ressourcen (yml, properties, xml) getrennt vom Kompilat.
+# → Konfigurationsänderungen invalidieren nicht den Class-Layer.
 COPY --from=build --chown=65532:65532 /app/extracted/application/ ./
+# → Kompilierter Anwendungscode. Ändert sich am häufigsten.
 COPY --from=build --chown=65532:65532 /app/app.jsa /app/app.jsa
 COPY --chown=65532:65532 containerconfig/application.yml /app/config/application.yml
 COPY --chown=65532:65532 entrypoint.sh /app/entrypoint.sh

@@ -92,7 +92,7 @@ docker build -t simpleservice:latest .
 docker build -f Dockerfile25Jlink -t simpleservice:jlink .
 
 docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" | grep "simpleservice"
-simpleservice            jlink     177MB
+simpleservice            jlink     298MB
 simpleservice            latest    512MB
 ```
 
