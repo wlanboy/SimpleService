@@ -1,0 +1,469 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "OpenAPI definition",
+        "version": "v0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8201",
+            "description": "Generated server url"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Audit",
+            "description": "Verwaltung und Abfrage von unveränderlichen Audit-Log-Einträgen mit Hash-Kette"
+        }
+    ],
+    "paths": {
+        "/audit": {
+            "get": {
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Alle Audit-Einträge abrufen",
+                "description": "Gibt alle Audit-Log-Einträge paginiert zurück.",
+                "operationId": "getAll",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Seitennummer (0-basiert)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        },
+                        "example": 0
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Einträge pro Seite",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        },
+                        "example": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Seite mit Audit-Einträgen",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Page"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Audit-Eintrag erstellen",
+                "description": "Legt einen neuen Audit-Log-Eintrag an und gibt ihn mit vergebener ID zurück.",
+                "operationId": "createAudit",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuditLog"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Eintrag erfolgreich erstellt",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuditLog"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ungültige Eingabedaten (Validierungsfehler)"
+                    }
+                }
+            }
+        },
+        "/audit/{id}": {
+            "get": {
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Audit-Eintrag per ID abrufen",
+                "description": "Gibt einen einzelnen Audit-Log-Eintrag anhand seiner Datenbank-ID zurück.",
+                "operationId": "getById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Datenbank-ID des Audit-Eintrags",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Eintrag gefunden",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuditLog"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kein Eintrag mit dieser ID vorhanden"
+                    }
+                }
+            }
+        },
+        "/audit/{id}/verify": {
+            "get": {
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Audit-Eintrag verifizieren",
+                "description": "Prüft die Hash-Integrität eines Audit-Eintrags. Gibt 200 zurück wenn der Hash gültig ist, 409 wenn er manipuliert wurde.",
+                "operationId": "verifyEntry",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Datenbank-ID des zu prüfenden Audit-Eintrags",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hash-Prüfung erfolgreich — Eintrag ist integer",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Audit entry 1 is valid."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kein Eintrag mit dieser ID vorhanden",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Audit entry 1 not found."
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Hash-Prüfung fehlgeschlagen — Eintrag wurde manipuliert",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Audit entry 1 is INVALID."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/audit/search": {
+            "get": {
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Audit-Einträge nach Ziel suchen",
+                "description": "Gibt alle Audit-Log-Einträge zurück, die dem angegebenen Ziel (target) entsprechen, paginiert.",
+                "operationId": "searchByTarget",
+                "parameters": [
+                    {
+                        "name": "target",
+                        "in": "query",
+                        "description": "Zielbezeichner, nach dem gefiltert wird",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "user-service"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Seitennummer (0-basiert)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        },
+                        "example": 0
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Einträge pro Seite",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        },
+                        "example": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Seite mit gefundenen Audit-Einträgen",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Page"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/audit/datetime": {
+            "get": {
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Serverzeit abrufen",
+                "description": "Gibt die aktuelle Serverzeit als ISO-8601-String zurück.",
+                "operationId": "datetime",
+                "responses": {
+                    "200": {
+                        "description": "Aktuelle Serverzeit",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "2026-02-23T10:15:30.123456"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuditLog": {
+                "type": "object",
+                "description": "Einzelner Eintrag im unveränderlichen Audit-Log mit SHA-256-Hash-Kette",
+                "properties": {
+                    "identifier": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Eindeutige Datenbank-ID des Eintrags",
+                        "example": 42,
+                        "readOnly": true
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "Bezeichner des Zielsystems oder der Komponente, die den Eintrag erzeugt hat",
+                        "example": "user-service",
+                        "minLength": 1
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Status des protokollierten Ereignisses",
+                        "example": "SUCCESS",
+                        "minLength": 1
+                    },
+                    "createDateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Zeitstempel der Erstellung (wird serverseitig gesetzt)",
+                        "example": "2026-02-23T10:15:30.123456",
+                        "readOnly": true
+                    },
+                    "updateDateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Zeitstempel der letzten Änderung (wird serverseitig gesetzt)",
+                        "example": "2026-02-23T10:15:30.123456",
+                        "readOnly": true
+                    },
+                    "hash": {
+                        "type": "string",
+                        "description": "SHA-256-Hash dieses Eintrags (Hex-kodiert, 64 Zeichen)",
+                        "example": "a3f5b2c1d4e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
+                        "minLength": 1
+                    },
+                    "previousHash": {
+                        "type": "string",
+                        "description": "SHA-256-Hash des vorherigen Eintrags in der Kette (Hex-kodiert, 64 Zeichen)",
+                        "example": "0000000000000000000000000000000000000000000000000000000000000000",
+                        "minLength": 1
+                    },
+                    "counter": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Laufende Nummer des Eintrags in der Hash-Kette (0-basiert)",
+                        "example": 0
+                    },
+                    "_links": {
+                        "$ref": "#/components/schemas/Links"
+                    }
+                },
+                "required": [
+                    "counter",
+                    "hash",
+                    "previousHash",
+                    "status",
+                    "target"
+                ]
+            },
+            "Page": {
+                "type": "object",
+                "properties": {
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "content": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "sort": {
+                        "$ref": "#/components/schemas/SortObject"
+                    },
+                    "pageable": {
+                        "$ref": "#/components/schemas/PageableObject"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    },
+                    "last": {
+                        "type": "boolean"
+                    },
+                    "numberOfElements": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PageableObject": {
+                "type": "object",
+                "properties": {
+                    "offset": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "sort": {
+                        "$ref": "#/components/schemas/SortObject"
+                    },
+                    "paged": {
+                        "type": "boolean"
+                    },
+                    "pageNumber": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "pageSize": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "unpaged": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "SortObject": {
+                "type": "object",
+                "properties": {
+                    "empty": {
+                        "type": "boolean"
+                    },
+                    "sorted": {
+                        "type": "boolean"
+                    },
+                    "unsorted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "Link": {
+                "type": "object",
+                "properties": {
+                    "href": {
+                        "type": "string"
+                    },
+                    "hreflang": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "deprecation": {
+                        "type": "string"
+                    },
+                    "profile": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "templated": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "Links": {
+                "type": "object",
+                "additionalProperties": {
+                    "$ref": "#/components/schemas/Link"
+                }
+            }
+        }
+    }
+}
