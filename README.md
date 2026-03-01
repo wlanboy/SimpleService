@@ -99,6 +99,6 @@ simpleservice            latest    512MB
 ## Docker run service
 
 ```bash
-docker run --rm --name simpleservice -p 8201:8201 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:latest
-docker run --rm --name simpleservice -p 8201:8201 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:jlink
+docker run --rm --name simpleservice -p 8201:8080 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:latest
+docker run --rm --name simpleservice -p 8201:8080 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:jlink
 ```

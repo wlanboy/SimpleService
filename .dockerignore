@@ -1,0 +1,20 @@
+# Maven
+target/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Nicht benötigt im Image
+Dockerfile*
+.dockerignore
+*.md
+screenshots/
