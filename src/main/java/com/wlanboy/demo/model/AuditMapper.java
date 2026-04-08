@@ -1,21 +1,23 @@
 package com.wlanboy.demo.model;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.stereotype.Component;
 import com.wlanboy.demo.repository.AuditData;
 
-@Component // Ermöglicht @Autowired im Service
+@Component
 public class AuditMapper {
 
     public AuditData toEntity(AuditLog log, String previousHash) {
         if (log == null) return null;
 
-        // Nutzt die Builder von AuditData (Lombok muss aktiv sein!)
         return AuditData.builder()
                 .target(log.getTarget())
                 .status(log.getStatus())
                 .previousHash(previousHash)
-                .hash(generateHash(log, previousHash))
+                .hash(generateHash(log.getTarget(), log.getStatus(), log.getCounter(), previousHash))
                 .counter(log.getCounter() != null ? log.getCounter() : 0L)
                 .build();
     }
@@ -23,7 +25,6 @@ public class AuditMapper {
     public AuditLog toModel(AuditData data) {
         if (data == null) return null;
 
-        // Nutzt den Builder von AuditLog
         return AuditLog.builder()
                 .identifier(data.getId())
                 .target(data.getTarget())
@@ -36,9 +37,18 @@ public class AuditMapper {
                 .build();
     }
 
-    private String generateHash(AuditLog log, String previousHash) {
-        Long counter = log.getCounter() != null ? log.getCounter() : 0L;
-        String input = log.getTarget() + log.getStatus() + counter + previousHash;
-        return BCrypt.hashpw(input, BCrypt.gensalt());
+    public static String generateHash(String target, String status, Long counter, String previousHash) {
+        String input = target + status + (counter != null ? counter : 0L) + previousHash;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(64);
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 }
