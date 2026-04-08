@@ -3,6 +3,7 @@ package com.wlanboy.demo.repository;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,7 +11,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import lombok.*;
 
 @Entity
-@Table(name = "tbl_audit")
+@Table(name = "tbl_audit", indexes = {
+    @Index(name = "idx_audit_target", columnList = "target"),
+    @Index(name = "idx_audit_counter", columnList = "counter")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,10 +25,12 @@ public class AuditData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Size(max = 255)
+    @Column(nullable = false, length = 255)
     private String target;
 
-    @Column(nullable = false)
+    @Size(max = 255)
+    @Column(nullable = false, length = 255)
     private String status;
 
     @CreationTimestamp
@@ -34,10 +40,12 @@ public class AuditData {
     @UpdateTimestamp
     private LocalDateTime updateDateTime;
 
+    @Column(nullable = false, length = 64)
     private String hash;
 
-    @Column(name = "previous_hash")
-    private String previousHash;    
+    @Column(name = "previous_hash", nullable = false, length = 64)
+    private String previousHash;
 
+    @Column(nullable = false)
     private Long counter;
 }
