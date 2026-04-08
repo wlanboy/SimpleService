@@ -23,7 +23,6 @@ import lombok.*;
 @Schema(description = "Einzelner Eintrag im unveränderlichen Audit-Log mit SHA-256-Hash-Kette")
 public class AuditLog extends RepresentationModel<AuditLog> {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Eindeutige Datenbank-ID des Eintrags", accessMode = Schema.AccessMode.READ_ONLY, example = "42")
     private Long identifier;
 
