@@ -16,7 +16,7 @@ public class AuditApplication {
         CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
         loggingFilter.setIncludeClientInfo(true);
         loggingFilter.setIncludeQueryString(true);
-        loggingFilter.setIncludeHeaders(true);
+        loggingFilter.setIncludeHeaders(false);
         return loggingFilter;
     }
     
