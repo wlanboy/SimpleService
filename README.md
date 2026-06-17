@@ -89,16 +89,24 @@ java -jar target\simpleservice-0.1.1-SNAPSHOT.jar
 
 ```bash
 docker build -t simpleservice:latest .
+docker build -f Dockerfile25 -t simpleservice:25 .
 docker build -f Dockerfile25Jlink -t simpleservice:jlink .
 
 docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" | grep "simpleservice"
-simpleservice            jlink     298MB
-simpleservice            latest    512MB
+simpleservice      jlink     296MB
+simpleservice      jlink     296MB
+simpleservice      latest    642MB
 ```
 
 ## Docker run service
 
 ```bash
 docker run --rm --name simpleservice -p 8201:8080 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:latest
-docker run --rm --name simpleservice -p 8201:8080 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:jlink
+#Started AuditApplication in 2.664 seconds
+
+docker run --rm --name simpleservice25 -p 8201:8080 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:25
+#Started AuditApplication in 3.714 seconds
+
+docker run --rm --name simpleservicejl -p 8202:8080 -v /tmp:/tmp -v ${pwd}/data:/data simpleservice:jlink
+#Started AuditApplication in 2.681 seconds
 ```

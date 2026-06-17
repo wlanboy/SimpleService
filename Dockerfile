@@ -1,7 +1,7 @@
 # ============================
 # 1. Build Stage (Java 25)
 # ============================
-FROM registry.access.redhat.com/ubi9/openjdk-25:latest AS build
+FROM registry.access.redhat.com/ubi10/openjdk-25:latest AS build
 # Eclipse Temurin bietet aktuelle Java-Versionen inkl. Java 25
 
 WORKDIR /app
@@ -50,7 +50,7 @@ RUN java -XX:ArchiveClassesAtExit=app.jsa \
 # ============================
 # 2. Runtime Stage (Java 25)
 # ============================
-FROM registry.access.redhat.com/ubi9/openjdk-25-runtime:latest
+FROM registry.access.redhat.com/ubi10/openjdk-25-runtime:latest
 
 # OCI-konforme Labels
 LABEL org.opencontainers.image.title="simpleservice" \
@@ -95,7 +95,7 @@ COPY --chown=185:185 containerconfig/application.yml /app/config/application.yml
 EXPOSE 8201
 # → Dokumentiert den Port, den die App verwendet (Spring Boot Default).
 
-# HEALTHCHECK entfernt: ubi9/openjdk-25-runtime (minimal) enthält kein curl.
+# HEALTHCHECK entfernt: ubi10/openjdk-25-runtime (minimal) enthält kein curl.
 # → Kubernetes Liveness/Readiness Probes in der Pod-Spec verwenden.
 
 # Wir nutzen exec, damit Java die PID 1 übernimmt.
