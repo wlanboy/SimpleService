@@ -16,3 +16,4 @@ buildNumber.properties
 .dbeaver/
 simpleservice.log
 data/
+bin/
