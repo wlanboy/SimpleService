@@ -20,7 +20,7 @@ spec:
             - containerPort: {{ .Values.service.port }}
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /app/data
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
