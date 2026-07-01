@@ -55,11 +55,11 @@ FROM registry.access.redhat.com/ubi10/openjdk-25-runtime:latest
 # OCI-konforme Labels
 LABEL org.opencontainers.image.title="simpleservice" \
       org.opencontainers.image.description="Simple Spring Rest Service playing Blockchain" \
-      org.opencontainers.image.version="0.0.1-SNAPSHOT" \
+      org.opencontainers.image.version="0.1.1-SNAPSHOT" \
       org.opencontainers.image.vendor="wlanboy" \
       org.opencontainers.image.source="https://github.com/wlanboy/SimpleService" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.base.name="eclipse-temurin:25-jre"
+      org.opencontainers.image.base.name="registry.access.redhat.com/ubi10/openjdk-25-runtime:latest"
 
 WORKDIR /app
 
