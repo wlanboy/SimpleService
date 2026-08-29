@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wlanboy.demo.GenesisInitializer;
 import com.wlanboy.demo.TestConfig;
 import com.wlanboy.demo.model.AuditLog;
-import com.wlanboy.demo.repository.AuditRepositorySimple;
+import com.wlanboy.demo.repository.AuditRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ class AuditControllerTest {
         private MockMvc mockMvc;
 
         @Autowired
-        private AuditRepositorySimple auditRepository;
+        private AuditRepository auditRepository;
 
         @Autowired
         private ObjectMapper objectMapper;

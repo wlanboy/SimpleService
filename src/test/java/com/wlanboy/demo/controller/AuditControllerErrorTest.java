@@ -2,7 +2,7 @@ package com.wlanboy.demo.controller;
 
 import com.wlanboy.demo.GenesisInitializer;
 import com.wlanboy.demo.TestConfig;
-import com.wlanboy.demo.repository.AuditRepositorySimple;
+import com.wlanboy.demo.repository.AuditRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ class AuditControllerErrorTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AuditRepositorySimple auditRepository;
+    private AuditRepository auditRepository;
 
     @Autowired
     private GenesisInitializer genesisInitializer;

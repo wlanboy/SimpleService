@@ -76,8 +76,7 @@ public class AuditController {
 			@Parameter(description = "Seitennummer (0-basiert)", example = "0") @RequestParam(defaultValue = "0") int page,
 			@Parameter(description = "Einträge pro Seite", example = "10") @RequestParam(defaultValue = "10") int size) {
 
-		PageRequest pageRequest = PageRequest.of(page, size);
-		Page<AuditLog> result = auditService.findAll(pageRequest);
+		Page<AuditLog> result = auditService.findAll(toPageRequest(page, size));
 
 		logger.info("AuditLogs returned: {}", result.getNumberOfElements());
 		return ResponseEntity.ok(result);
@@ -101,8 +100,7 @@ public class AuditController {
 			@Parameter(description = "Seitennummer (0-basiert)", example = "0") @RequestParam(defaultValue = "0") int page,
 			@Parameter(description = "Einträge pro Seite", example = "10") @RequestParam(defaultValue = "10") int size) {
 
-		PageRequest pageRequest = PageRequest.of(page, size);
-		Page<AuditLog> result = auditService.findByTarget(target, pageRequest);
+		Page<AuditLog> result = auditService.findByTarget(target, toPageRequest(page, size));
 
 		logger.info("AuditLogs found for target {}: {}", target, result.getNumberOfElements());
 		return ResponseEntity.ok(result);
@@ -133,6 +131,10 @@ public class AuditController {
 		} else {
 			return ResponseEntity.status(409).body("Audit entry " + id + " is INVALID.");
 		}
+	}
+
+	private PageRequest toPageRequest(int page, int size) {
+		return PageRequest.of(page, size);
 	}
 
 }

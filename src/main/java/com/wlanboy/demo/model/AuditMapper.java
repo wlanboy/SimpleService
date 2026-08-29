@@ -3,6 +3,7 @@ package com.wlanboy.demo.model;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 import com.wlanboy.demo.repository.AuditData;
@@ -10,15 +11,21 @@ import com.wlanboy.demo.repository.AuditData;
 @Component
 public class AuditMapper {
 
-    public AuditData toEntity(AuditLog log, String previousHash) {
+    public static final String GENESIS_HASH = "GENESIS";
+
+    public AuditData toEntity(AuditLog log, Optional<AuditData> previousEntry) {
         if (log == null) return null;
+
+        String previousHash = previousEntry.map(AuditData::getHash).orElse(GENESIS_HASH);
+        long counter = previousEntry.map(e -> e.getCounter() + 1).orElse(0L);
+        String hash = generateHash(new HashInput(log.getTarget(), log.getStatus(), counter, previousHash));
 
         return AuditData.builder()
                 .target(log.getTarget())
                 .status(log.getStatus())
                 .previousHash(previousHash)
-                .hash(generateHash(log.getTarget(), log.getStatus(), log.getCounter(), previousHash))
-                .counter(log.getCounter() != null ? log.getCounter() : 0L)
+                .hash(hash)
+                .counter(counter)
                 .build();
     }
 
@@ -37,8 +44,9 @@ public class AuditMapper {
                 .build();
     }
 
-    public static String generateHash(String target, String status, Long counter, String previousHash) {
-        String input = target + status + (counter != null ? counter : 0L) + previousHash;
+    public static String generateHash(HashInput hashInput) {
+        String input = hashInput.target() + hashInput.status()
+                + (hashInput.counter() != null ? hashInput.counter() : 0L) + hashInput.previousHash();
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] bytes = md.digest(input.getBytes(StandardCharsets.UTF_8));
