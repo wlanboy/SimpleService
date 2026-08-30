@@ -10,7 +10,7 @@ spec:
     name: {{ .Values.certmanager.issuer }}
     kind: {{ .Values.certmanager.kind }}
   dnsNames:
-  {{- range .Values.hosts }}
+  {{- range .Values.ingress.hosts }}
     - {{ . }}
   {{- end }}
   privateKey:

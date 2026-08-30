@@ -6,21 +6,31 @@ image:
   tag: latest
   pullPolicy: Always
 
-hosts: 
-  - simpleservice.tp.lan
-  - simpleservice.gmk.lan
-
 service:
   port: 8201
+  targetPort: 8080
 
 persistence:
   enabled: true
   size: 100Mi
-  storageClass: local-path
+  storageClass: default
+
+ingress:
+  # istio | traefik | none
+  controller: istio
+  hosts:
+    - simpleservice.tp.lan
+    - simpleservice.gmk.lan
+    - simpleservice.localhost
 
 istio:
   gateway: simpleservice-gateway
   gatewayNamespace: "istio-ingress"
+
+traefik:
+  entryPoints:
+    - web
+    - websecure
 
 certmanager:
   enabled: true

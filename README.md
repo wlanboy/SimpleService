@@ -130,10 +130,14 @@ docker run --rm --name simpleservicejl -p 8202:8080 -v /tmp:/tmp -v ${pwd}/data:
 Für den Betrieb in Kubernetes stehen zwei Varianten bereit:
 
 - `simpleservice-deployment.yaml`: einfaches, statisches Deployment + Service-Manifest.
-- `simple-chart/`: Helm-Chart mit konfigurierbaren Werten (Replica-Count, Image, Ingress-Hosts, Persistenz via PVC, optionalem Istio-Gateway sowie cert-manager-Integration für TLS) – siehe `simple-chart/values.yaml`.
+- `simple-chart/`: Helm-Chart mit konfigurierbaren Werten (Replica-Count, Image, Ingress-Hosts, Persistenz via PVC, wahlweise Istio-Gateway oder Traefik-IngressRoute sowie cert-manager-Integration für TLS) – siehe `simple-chart/simple-chart.md` für die Chart-Doku und `simple-chart/values.yaml` für alle Werte.
 
 ```bash
+# Istio (Default)
 helm install simpleservice ./simple-chart
+
+# Traefik statt Istio
+helm install simpleservice ./simple-chart -f simple-chart/values-traefik.yaml
 ```
 
 ## Multi-Arch-Build

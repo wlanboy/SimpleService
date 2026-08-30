@@ -17,21 +17,21 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.service.targetPort }}
           volumeMounts:
             - name: data
               mountPath: /app/data
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: {{ .Values.service.port }}
+              port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 15
             periodSeconds: 10
 
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: {{ .Values.service.port }}
+              port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 15
             periodSeconds: 10
       volumes:
