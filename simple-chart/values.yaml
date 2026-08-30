@@ -13,7 +13,8 @@ service:
 persistence:
   enabled: true
   size: 100Mi
-  storageClass: default
+  # leer lassen, um die Default-StorageClass des Clusters zu verwenden
+  storageClass: ""
 
 ingress:
   # istio | traefik | none

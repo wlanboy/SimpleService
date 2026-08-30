@@ -70,7 +70,7 @@ certmanager:
 | `namespace` | Ziel-Namespace | `simpleservice` |
 | `image.repository` / `image.tag` / `image.pullPolicy` | Container-Image | `wlanboy/simpleservice:latest`, `Always` |
 | `service.port` | Service- und Container-Port | `8201` |
-| `persistence.enabled` / `size` / `storageClass` | PVC-Konfiguration | `true`, `100Mi`, `local-path` |
+| `persistence.enabled` / `size` / `storageClass` | PVC-Konfiguration; leerer `storageClass` nutzt die Cluster-Default-StorageClass | `true`, `100Mi`, `""` |
 | `ingress.controller` | `istio` \| `traefik` \| `none` | `istio` |
 | `ingress.hosts` | Hostnamen für Gateway/VirtualService/IngressRoute/Zertifikat | `simpleservice.tp.lan`, `simpleservice.gmk.lan`, `simpleservice.localhost` |
 | `istio.gateway` / `istio.gatewayNamespace` | Name und Namespace des Istio-Gateways | `simpleservice-gateway`, `istio-ingress` |
